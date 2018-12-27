@@ -7,7 +7,7 @@ public class Flight {
 
 
     //Constructor of Flights
-    public Flight(Airport departureAirport, Airport arrivalAirport, int duration, String airline){
+    Flight(Airport departureAirport, Airport arrivalAirport, int duration, String airline){
         this.departureAirport = departureAirport;
         this.arrivalAirport = arrivalAirport;
         this.duration = duration;
@@ -15,22 +15,27 @@ public class Flight {
     }
 
     //Getter of Departure Airport (Airport A)
-    public Airport getDepartureAirport() {
+    Airport getDepartureAirport() {
         return departureAirport;
     }
 
     //Getter of Arrival Airport (Airport B)
-    public Airport getArrivalAirport() {
+    Airport getArrivalAirport() {
         return arrivalAirport;
     }
 
     //Getter of Airline of Flight
-    public String getAirline() {
+    String getAirline() {
         return airline;
     }
 
     //Getter of Duration of Flight
-    public int getDuration() {
+    int getDuration() {
         return duration;
+    }
+
+    @Override
+    public String toString() {
+        return "Flight operated by " + this.airline + ", with duration " + this.duration + " minutes";
     }
 }

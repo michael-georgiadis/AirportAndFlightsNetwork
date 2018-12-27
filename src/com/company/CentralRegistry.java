@@ -8,12 +8,12 @@ public class CentralRegistry {
     private static ArrayList<Flight> flights = new ArrayList<Flight>();
 
 
-    public static void addAirport(Airport anAirport){
+    static void addAirport(Airport anAirport){
         airports.add(anAirport);
     }
 
     //Adds a flight and the does the appropriate checks to update the lists with connected Airports and serving Airlines
-    public static void  addFlight(Flight aFlight){
+    static void  addFlight(Flight aFlight){
         flights.add(aFlight);
         if (!aFlight.getArrivalAirport().getAirlines().contains(aFlight.getAirline()))
             aFlight.getArrivalAirport().getAirlines().add(aFlight.getAirline());
@@ -51,13 +51,57 @@ public class CentralRegistry {
         return flights.get(maxPos);
     }
 
+    static ArrayList<Flight> getDirectlyConnectedFlights(Airport anAirport, Airport anotherAirport){
+        ArrayList<Flight> directFlights = new ArrayList<Flight>();
+        for (Flight flight : flights){
+            if ((flight.getArrivalAirport() == anAirport && flight.getDepartureAirport() == anotherAirport) ||
+                    (flight.getArrivalAirport() == anotherAirport && flight.getDepartureAirport() == anAirport)){
+                directFlights.add(flight);
+            }
+        }
+        return directFlights;
+    }
+
+
+    private static Airport getAirportViaName(String aText){
+        for (Airport airport: airports){
+            if (airport.getName().equals(aText)) return airport;
+        }
+        return null;
+    }
+
+    private static Airport getAirportViaCity(String aText){
+        for(Airport airport:airports){
+            if (airport.getCity().equals(aText)) return airport;
+        }
+        return null;
+    }
+
+    static Airport getAirportViaElement(String aText){
+        if(getAirportViaCity(aText) == null && getAirportViaName(aText) == null){
+            return null;
+        }
+        else if (getAirportViaName(aText) == null){
+            return getAirportViaCity(aText);
+        }
+        else return getAirportViaName(aText);
+    }
+
     //Getter of Airports
-    public static ArrayList<Airport> getAirports() {
+    static ArrayList<Airport> getAirports() {
         return airports;
     }
 
     //Getter of Flights
-    public static ArrayList<Flight> getFlights() {
+    static ArrayList<Flight> getFlights() {
         return flights;
+    }
+
+    public static Airport getAirport(String airportName) {
+        for (Airport airport:airports)
+            if (airport.getName().equals(airportName)) {
+                return airport;
+            }
+        return null;
     }
 }

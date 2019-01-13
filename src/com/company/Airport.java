@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 public class Airport {
     private String name, codeName, city, country;
+    private Node node;
     private ArrayList<String> airlines = new ArrayList<String>();
     private ArrayList<Airport> directlyConnectedAirports = new ArrayList<Airport>();
 
@@ -15,6 +16,7 @@ public class Airport {
         this.codeName = codeName;
         this.city = city;
         this.country = country;
+        this.node = null;
     }
 
 
@@ -71,6 +73,12 @@ public class Airport {
             System.out.println(airline);
         }
     }
+
+    void updateNode(Node aNode){
+        this.node = aNode;
+    }
+
+    Node getNode() {return this.node;}
 
     String getName() {
         return name;

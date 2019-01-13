@@ -1,20 +1,22 @@
 package com.company;
 
 import javax.swing.*;
-import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
-public class mainFrame extends JFrame implements ActionListener {
+public class MainFrame extends JFrame implements ActionListener {
     private JButton findButton = new JButton("Find Flights");
-    JButton backButton = new JButton("Back to Search Screen");
+    private JButton backButton = new JButton("Back to Search Screen");
     private JTextField toCity;
     private JTextArea airlineNames;
     private JTextArea directlyConnectedFlights, indirectConnections;
     private Airport anAirport;
-    mainFrame(Airport anAirport){
+    MainFrame(Airport anAirport){
         this.anAirport = anAirport;
         this.setTitle("Airport Page");
         JPanel mainPanel = new JPanel();
@@ -76,10 +78,11 @@ public class mainFrame extends JFrame implements ActionListener {
                 Airport anotherAirport = CentralRegistry.getAirportViaElement(toCity.getText());
                 printDirectlyConnectedFlights(CentralRegistry.getDirectlyConnectedFlights(anAirport, anotherAirport));
                 printCommonConnections(anAirport, anotherAirport);
+                makeTxtFile(anAirport, anotherAirport);
             }
         }
         else if (e.getSource() == backButton){
-            new startFrame();
+            new StartFrame();
             dispose();
         }
     }
@@ -89,7 +92,42 @@ public class mainFrame extends JFrame implements ActionListener {
         }
     }
 
-    void printDirectlyConnectedFlights(ArrayList<Flight> flights){
+    private void makeTxtFile(Airport anAirport, Airport anotherAirport){
+        try {
+            PrintWriter writer = new PrintWriter(anAirport.getCity() + "-to-" + anotherAirport.getCity()+".txt", "UTF-8");
+            writer.println("CITY: " + anAirport.getCity() +  ", " + anAirport.getCountry());
+            writer.println("Airport: " + anAirport.getName());
+            writer.println("DESTINATION: " + anotherAirport.getCity() + "\n");
+            writer.println("DIRECT FLIGHT DETAILS");
+            ArrayList<Flight> directFlights = CentralRegistry.getDirectlyConnectedFlights(anAirport, anotherAirport);
+            if (directFlights.size() == 0){
+                writer.println("No direct flights available");
+            }
+            else {
+                int index = 1;
+                for (Flight flight : directFlights){
+                    writer.println("[" + index++ + "] " + flight.toString());
+                }
+            }
+            writer.println();
+            writer.println("INDIRECT FLIGHTS THROUGH: ");
+            if (anAirport.getCommonConnections(anotherAirport).size()==0)
+                writer.println("No indirect flights available...");
+            else{
+                ArrayList<Airport> indirectAirports = anAirport.getCommonConnections(anotherAirport);
+                int index = 1;
+                for (Airport airport: indirectAirports)
+                    writer.println("[" + index++ + "] " + airport.toString());
+            }
+            writer.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+    }
+    private void printDirectlyConnectedFlights(ArrayList<Flight> flights){
         directlyConnectedFlights.setText(null);
         directlyConnectedFlights.append("DIRECT FLIGHTS DETAILS\n");
         if (flights.size()==0){
@@ -102,7 +140,7 @@ public class mainFrame extends JFrame implements ActionListener {
         }
     }
 
-    void printCommonConnections(Airport anAirport, Airport anotherAirport){
+    private void printCommonConnections(Airport anAirport, Airport anotherAirport){
         indirectConnections.setText(null);
         indirectConnections.append("INDIRECT FLIGHTS THROUGH: \n");
         if (anAirport.getCommonConnections(anotherAirport).size()==0)
